@@ -1,0 +1,30 @@
+{
+  "name": "workloadtruth",
+  "description": "Classifies a GPU workload as TRAINING, INFERENCE, or IDLE from telemetry alone, no application instrumentation required.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/RudrenduPaul/WorkloadTruth",
+  "license": "Apache-2.0",
+  "interfaces": [
+    {
+      "type": "cli",
+      "command": "workloadtruth",
+      "subcommands": ["classify", "watch", "benchmark", "verify-log", "mcp"],
+      "json_output_flag": "--json"
+    },
+    {
+      "type": "mcp",
+      "transport": "stdio",
+      "start_command": "workloadtruth mcp",
+      "tools": ["classify_workload", "run_benchmark", "verify_audit_log"]
+    }
+  ],
+  "packages": {
+    "pypi": "workloadtruth-cli",
+    "npm": "workloadtruth-cli"
+  },
+  "capabilities": [
+    "gpu-workload-classification",
+    "gpu-telemetry-audit-log",
+    "evasion-robustness-benchmark"
+  ]
+}

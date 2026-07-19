@@ -1,0 +1,34 @@
+{
+  "name": "workloadtruth-cli",
+  "version": "0.1.0",
+  "description": "Classify a GPU workload as inference or training from telemetry alone, no application changes required.",
+  "keywords": [
+    "gpu",
+    "nvml",
+    "cuda",
+    "mlops",
+    "finops",
+    "observability",
+    "ai-governance",
+    "compute-monitoring",
+    "agent-tools",
+    "mcp"
+  ],
+  "homepage": "https://github.com/RudrenduPaul/WorkloadTruth",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RudrenduPaul/WorkloadTruth.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RudrenduPaul/WorkloadTruth/issues"
+  },
+  "license": "Apache-2.0",
+  "author": "Rudrendu Paul",
+  "bin": {
+    "workloadtruth-cli": "bin/workloadtruth-cli.js"
+  },
+  "files": ["bin"],
+  "engines": {
+    "node": ">=18"
+  }
+}
