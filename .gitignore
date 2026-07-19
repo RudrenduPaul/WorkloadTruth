@@ -1,0 +1,35 @@
+# Assistant/internal config -- never committed to this public repo.
+# See strategy-oss-all-implementation-plan/workloadtruth/ in the private
+# oss-ideas-execution-strategy repo for the canonical copies.
+CLAUDE.md
+TODOS.md
+BRANCH_PROTECTION.md
+docs/branch-protection.md
+docs/security-review-*.md
+
+# Local agent-tooling state
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node (npm shim)
+node_modules/
+npm-shim/dist/
+npm-shim/node_modules/
+
+# OS/editor
+.DS_Store
+*.swp
