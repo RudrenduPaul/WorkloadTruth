@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3 -- 2026-07-20 (npm only)
+
+npm's published package had a thin, scoped-down README instead of the
+full documentation (FAQ, benchmark, comparison table, CLI reference)
+that ships to PyPI and GitHub -- a real completeness gap, not just a
+style choice. npm-shim/README.md now is the exact same file as the
+root README.md, single source of truth. No code changes.
+
 ## 0.1.2 -- 2026-07-19
 
 Metadata-only release. Adds the second co-author (Sourav Nandy) to PyPI's
