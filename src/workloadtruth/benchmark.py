@@ -12,8 +12,9 @@ invoked on.
 The numbers this benchmark produces are NOT comparable to the paper's --
 different data, different (and much simpler) hardware simulation, no shared
 ground truth. Report them side by side in the README, labeled separately,
-never blended into one number. This is a binding rule from this project's
-own anti-sycophancy audit, not a style preference.
+never blended into one number. This is a correctness requirement, not a
+style preference: blending the two would misrepresent what was actually
+measured.
 """
 
 from __future__ import annotations

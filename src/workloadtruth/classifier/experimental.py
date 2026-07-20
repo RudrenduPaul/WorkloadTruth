@@ -1,13 +1,12 @@
 """Placeholder for a future ML-based classifier.
 
-Per this project's own anti-sycophancy rules: an ML classifier is only
-shipped once it is independently shown to beat the rule-based baseline on a
-real, honestly-reported test set (see the execution plan's Assumption 3).
-No such model exists yet -- arXiv:2606.19262's trained weights and dataset
-were not released, and this project's build environment has no GPU to
-collect real training data on. Shipping a stub that returns fabricated
-predictions would misrepresent accuracy that was never measured, so
-`--experimental` fails loudly instead.
+An ML classifier ships here only once it is independently shown to beat
+the rule-based baseline on a real, honestly-reported test set. No such
+model exists yet -- arXiv:2606.19262's trained weights and dataset were
+not released, and this project's build environment has no GPU to collect
+real training data on. Shipping a stub that returns fabricated predictions
+would misrepresent accuracy that was never measured, so `--experimental`
+fails loudly instead.
 """
 
 from __future__ import annotations
