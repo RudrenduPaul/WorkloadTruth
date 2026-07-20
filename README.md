@@ -3,10 +3,30 @@
 **Classify a GPU workload as `TRAINING`, `INFERENCE`, or `IDLE` from telemetry alone. No code changes to the workload, no self-reported job labels.**
 
 [![CI](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml/badge.svg)](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/workloadtruth-cli)](https://pypi.org/project/workloadtruth-cli/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](pyproject.toml)
 
+![WorkloadTruth classifying a synthetic training workload, then running the evasion-robustness benchmark](docs/demo.gif)
+
 Every GPU scheduler in common use today, including [run:ai](https://docs.run.ai/v2.20/Researcher/workloads/inference/inference-overview/), Slurm, and Kubernetes GPU operators, asks you to *declare* whether a job is training or inference at submission time. None of them check. WorkloadTruth reads GPU telemetry (utilization, memory pattern, power draw) and answers the question independently, so a mislabeled or misbehaving job doesn't go unnoticed.
+
+## Table of contents
+
+- [Quick summary](#quick-summary)
+- [Install](#install)
+- [Quickstart](#quickstart)
+- [How classification works](#how-classification-works)
+- [Benchmark](#benchmark)
+- [CLI reference](#cli-reference)
+- [Agent-native (MCP + A2A)](#agent-native-mcp--a2a)
+- [Audit log](#audit-log)
+- [Why two registries](#why-two-registries)
+- [Comparison](#comparison)
+- [What is WorkloadTruth, and why does it exist](#what-is-workloadtruth-and-why-does-it-exist)
+- [Relationship to prior research](#relationship-to-prior-research)
+- [What WorkloadTruth is not](#what-workloadtruth-is-not)
+- [FAQ](#faq)
 
 ## Quick summary
 
@@ -142,6 +162,12 @@ WorkloadTruth's implementation is Python. NVML access (`pynvml`/`nvidia-ml-py`) 
 
 Checked directly against each project's own documentation: [DCGM exporter docs](https://docs.nvidia.com/datacenter/dcgm/latest/gpu-telemetry/dcgm-exporter.html), [run:ai inference overview](https://docs.run.ai/v2.20/Researcher/workloads/inference/inference-overview/), [W&B system metrics docs](https://docs.wandb.ai/models/ref/python/experiments/system-metrics). None of these classify workload type from telemetry alone. That gap is what WorkloadTruth fills.
 
+## What is WorkloadTruth, and why does it exist
+
+WorkloadTruth is an open-source command-line tool and MCP server that classifies a running GPU workload as `TRAINING`, `INFERENCE`, or `IDLE` using only GPU-level telemetry (utilization, memory pattern, power draw), with no changes to the workload's own code and no reliance on a self-reported job label.
+
+It exists because every mainstream GPU scheduler asks the job's owner to declare its type at submission time and never checks that declaration against what the hardware is actually doing. That gap has two real consequences: cost misallocation (a job scheduled at low-priority "inference" pricing that is actually running full training) and unauthorized workload changes (an inference endpoint that quietly starts training on live traffic). WorkloadTruth closes that verification gap today, and doubles as the first open, installable implementation of a real academic research thread on verifying AI training runs from hardware telemetry (see below).
+
 ## Relationship to prior research
 
 WorkloadTruth's core technique, classifying training vs. non-training GPU activity from telemetry, is not novel. It's the direct application of a real, active research thread:
@@ -172,6 +198,15 @@ Not yet, and the benchmark section above is the honest reason why: 0% accuracy o
 
 **Why not just use the ML classifier from the paper?**
 Its trained weights and dataset were never published. Reimplementing an ML classifier without real training data would produce an unvalidated accuracy claim, not a measured one. See [How classification works](#how-classification-works).
+
+**How is this different from run:ai or NVIDIA DCGM?**
+run:ai and DCGM both expose or use GPU telemetry, but neither classifies workload type from that telemetry. run:ai relies entirely on the label the job's owner declares at submission; DCGM just exposes raw utilization and memory metrics for something else to interpret. WorkloadTruth is the layer that actually looks at the telemetry and answers the question. See the [comparison table](#comparison).
+
+**Does this work on Windows, macOS, and Linux?**
+The `synthetic` backend runs anywhere Python 3.9+ runs, including this project's own macOS build environment (which has no NVIDIA GPU). The `nvml` backend requires an NVIDIA GPU and driver, which in practice means Linux or Windows with NVIDIA hardware; NVML itself is not available on macOS.
+
+**What license is this under, and can I use it commercially?**
+Apache 2.0. Commercial use, modification, and redistribution are all permitted under its terms; see [LICENSE](LICENSE).
 
 ## Contributing
 
