@@ -22,8 +22,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install
-        run: pip install -e ".[dev,mcp]"
+      - name: Install (base + dev)
+        run: pip install -e ".[dev]"
+
+      # The mcp package itself requires Python >=3.10, independent of this
+      # project's own >=3.9 floor -- only install it, and only type-check
+      # mcp_server.py with real type info, on a Python version it supports.
+      - name: Install mcp extra (Python >=3.10 only)
+        if: ${{ matrix.python-version != '3.9' }}
+        run: pip install -e ".[mcp]"
 
       - name: Lint (ruff check)
         run: ruff check .
@@ -31,8 +38,13 @@ jobs:
       - name: Format check (ruff format)
         run: ruff format --check .
 
-      - name: Type check (mypy)
+      - name: Type check (mypy, full mcp types)
+        if: ${{ matrix.python-version != '3.9' }}
         run: mypy src/workloadtruth
+
+      - name: Type check (mypy, excluding mcp_server.py)
+        if: ${{ matrix.python-version == '3.9' }}
+        run: mypy src/workloadtruth --exclude 'mcp_server\.py'
 
       - name: Test + coverage
         run: pytest --cov=workloadtruth --cov-report=term-missing --cov-fail-under=80

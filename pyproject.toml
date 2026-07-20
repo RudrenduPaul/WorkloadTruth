@@ -40,6 +40,10 @@ dependencies = ["click>=8.1"]
 
 [project.optional-dependencies]
 nvml = ["nvidia-ml-py>=12.560"]
+# The mcp package itself requires Python >=3.10, stricter than this
+# project's own >=3.9 floor -- `pip install "workloadtruth-cli[mcp]"`
+# on Python 3.9 will fail to resolve. Every other feature (classify,
+# watch, benchmark, verify-log) works on 3.9.
 mcp = ["mcp>=1.2"]
 dev = [
     "pytest>=8.0",

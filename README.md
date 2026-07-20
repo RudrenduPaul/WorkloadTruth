@@ -127,7 +127,7 @@ Commands:
 | `watch` | Continuous classification; appends a hash-chained entry to a local audit log on every window. |
 | `benchmark` | Runs the evasion-robustness benchmark (see above). |
 | `verify-log` | Re-derives every audit-log entry's hash and confirms the chain hasn't been tampered with. |
-| `mcp` | Starts an MCP server (stdio) exposing `classify_workload`, `run_benchmark`, `verify_audit_log` as agent-callable tools. Requires `pip install "workloadtruth-cli[mcp]"`. |
+| `mcp` | Starts an MCP server (stdio) exposing `classify_workload`, `run_benchmark`, `verify_audit_log` as agent-callable tools. Requires `pip install "workloadtruth-cli[mcp]"` on Python 3.10+ (see below). |
 
 Every command supports `--json`. Full flag reference: `workloadtruth <command> --help`.
 
@@ -137,6 +137,8 @@ Every command supports `--json`. Full flag reference: `workloadtruth <command> -
 pip install "workloadtruth-cli[mcp]"
 workloadtruth mcp
 ```
+
+The `mcp` package itself requires Python 3.10+, stricter than WorkloadTruth's own 3.9 floor. Every other feature (`classify`, `watch`, `benchmark`, `verify-log`) works on Python 3.9.
 
 Exposes three tools over stdio MCP: `classify_workload`, `run_benchmark`, `verify_audit_log`. A `.well-known/agent.json` manifest is shipped at the repo root for A2A-style discovery, listing both the CLI and MCP interfaces and the packages that provide them.
 
