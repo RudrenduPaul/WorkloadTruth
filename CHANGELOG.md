@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 -- 2026-07-19
+
+Metadata-only release. Adds the second co-author (Sourav Nandy) to PyPI's
+`authors`/`project.urls`, matching this maintainer's other published
+`-cli` packages. No code changes.
+
 ## 0.1.1 -- 2026-07-19
 
 Docs-only release. README gets a real demo GIF, a table of contents, a
