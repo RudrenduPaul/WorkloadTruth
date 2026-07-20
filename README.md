@@ -7,7 +7,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](pyproject.toml)
 
-![WorkloadTruth classifying a synthetic training workload, then running the evasion-robustness benchmark](docs/demo.gif)
+![WorkloadTruth classifying a synthetic training workload, then running the evasion-robustness benchmark](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo.gif)
 
 Every GPU scheduler in common use today, including [run:ai](https://docs.run.ai/v2.20/Researcher/workloads/inference/inference-overview/), Slurm, and Kubernetes GPU operators, asks you to *declare* whether a job is training or inference at submission time. None of them check. WorkloadTruth reads GPU telemetry (utilization, memory pattern, power draw) and answers the question independently, so a mislabeled or misbehaving job doesn't go unnoticed.
 
