@@ -31,7 +31,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
   [ -n "$files" ] && forbidden_files="$forbidden_files
 $files"
 
-  matches=$(git diff "$range" -- . ':!scripts/check-no-internal-docs.sh' | grep -inE "$PATTERN" || true)
+  matches=$(git diff "$range" -- . ':!scripts/check-no-internal-docs.sh' ':!.github/workflows/no-internal-docs.yml' | grep -inE "$PATTERN" || true)
   [ -n "$matches" ] && hits="$hits
 $matches"
 done
