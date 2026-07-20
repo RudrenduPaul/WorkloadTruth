@@ -31,7 +31,7 @@ jobs:
         run: |
           set -e
           pattern='CEO review|office.?hours|eng.?review|devex review|CSO review|CSO threat.?model|/oss-[0-9]+-[a-z-]+|/plan-eng-review|/review finding|Reviewer Concern|viability score|WOUNDED|fundrais|investor.?outreach|Show HN draft|hype.?seed'
-          hits=$(git grep -InE "$pattern" -- . ':!.github/workflows/no-internal-docs.yml' || true)
+          hits=$(git grep -InE "$pattern" -- . ':!.github/workflows/no-internal-docs.yml' ':!scripts/check-no-internal-docs.sh' || true)
           if [ -n "$hits" ]; then
             echo "Internal-process language found in tracked files:"
             echo "$hits"
