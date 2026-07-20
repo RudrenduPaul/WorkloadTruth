@@ -10,6 +10,11 @@ docs/security-review-*.md
 # Local agent-tooling state
 .claude/
 
+# Secrets, should never exist in this repo but guard anyway
+.env
+.env.*
+!.env.example
+
 # Python
 __pycache__/
 *.py[cod]
