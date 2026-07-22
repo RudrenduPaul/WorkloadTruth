@@ -24,6 +24,9 @@
   },
   "license": "Apache-2.0",
   "author": "Rudrendu Paul",
+  "contributors": [
+    "Sourav Nandy"
+  ],
   "bin": {
     "workloadtruth-cli": "bin/workloadtruth-cli.js"
   },
