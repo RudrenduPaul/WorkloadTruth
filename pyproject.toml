@@ -44,7 +44,11 @@ nvml = ["nvidia-ml-py>=12.560"]
 # project's own >=3.9 floor -- `pip install "workloadtruth-cli[mcp]"`
 # on Python 3.9 will fail to resolve. Every other feature (classify,
 # watch, benchmark, verify-log) works on 3.9.
-mcp = ["mcp>=1.2"]
+# Capped below 2.0.0: that release renamed/relocated
+# mcp.server.fastmcp.FastMCP (now mcp.server.mcpserver.MCPServer),
+# which breaks the import in mcp_server.py. Revisit once this module
+# is migrated to the new API.
+mcp = ["mcp>=1.2,<2.0.0"]
 dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
