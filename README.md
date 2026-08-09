@@ -4,6 +4,7 @@
 
 [![CI](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml/badge.svg)](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/workloadtruth-cli)](https://pypi.org/project/workloadtruth-cli/)
+[![npm](https://img.shields.io/npm/v/workloadtruth-cli)](https://www.npmjs.com/package/workloadtruth-cli)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](pyproject.toml)
 
@@ -71,7 +72,7 @@ $ workloadtruth classify --backend nvml --samples 10 --interval 1 --json
 
 ## How classification works
 
-WorkloadTruth ships a **rule-based classifier only** in v0.1: a set of documented, inspectable thresholds over four features extracted from a telemetry window (average and variance of GPU utilization, memory-growth slope, average and variance of power draw). Every threshold lives as a named constant in [`src/workloadtruth/classifier/rules.py`](src/workloadtruth/classifier/rules.py) with a comment explaining its intuition. Nothing is a black box.
+WorkloadTruth currently ships a **rule-based classifier only**: a set of documented, inspectable thresholds over four features extracted from a telemetry window (average and variance of GPU utilization, memory-growth slope, average and variance of power draw). Every threshold lives as a named constant in [`src/workloadtruth/classifier/rules.py`](src/workloadtruth/classifier/rules.py) with a comment explaining its intuition. Nothing is a black box.
 
 `--experimental` (an ML-based classifier) is present as a flag but fails loudly with an explanation rather than shipping a fake result. [arXiv:2606.19262](https://arxiv.org/abs/2606.19262)'s trained model and dataset were never published, and this project has no NVIDIA GPU in its build environment to collect real training data. An ML classifier ships here only once it's trained on a real, disclosed dataset and independently shown to beat the rule-based baseline, not before.
 
@@ -81,7 +82,7 @@ WorkloadTruth ships a **rule-based classifier only** in v0.1: a set of documente
 
 **This is run on synthetic data, not live NVIDIA hardware, so it is not directly comparable to arXiv:2606.19262's real-hardware numbers.** Both are reported below, side by side, never blended into one figure.
 
-| | arXiv:2606.19262 (real hardware, NVML) | WorkloadTruth v0.1 (synthetic traces, 300 trials/cell) |
+| | arXiv:2606.19262 (real hardware, NVML) | WorkloadTruth (synthetic traces, 300 trials/cell) |
 |---|---|---|
 | Clean accuracy | 98.2% | 100.0% |
 | Evasion accuracy | 43-87% | 66.7% overall |
@@ -193,7 +194,7 @@ WorkloadTruth's core technique, classifying training vs. non-training GPU activi
 Only for the `nvml` backend. `--backend synthetic` runs the full classifier and CLI against documented synthetic traces, no GPU required. Useful for trying the tool or for CI.
 
 **Can it classify AMD or Intel GPU workloads?**
-Not in v0.1. The telemetry layer is a pluggable interface (`TelemetryBackend`) specifically so a new vendor backend (AMD ROCm, Intel Level Zero) can be added without touching the classifier. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Not yet. The telemetry layer is a pluggable interface (`TelemetryBackend`) specifically so a new vendor backend (AMD ROCm, Intel Level Zero) can be added without touching the classifier. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 **Is the classifier accurate enough to bill or penalize someone based on its output?**
 Not yet, and the benchmark section above is the honest reason why: 0% accuracy on evasive training workloads today. Treat `workload_type` as a signal to investigate, not a verdict.
