@@ -1,40 +1,18 @@
 # WorkloadTruth
 
-**Classify a GPU workload as `TRAINING`, `INFERENCE`, or `IDLE` from telemetry alone. No code changes to the workload, no self-reported job labels.**
-
 [![CI](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml/badge.svg)](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/workloadtruth-cli)](https://pypi.org/project/workloadtruth-cli/)
 [![npm](https://img.shields.io/npm/v/workloadtruth-cli)](https://www.npmjs.com/package/workloadtruth-cli)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](pyproject.toml)
 
+[Install](#install) • [Quickstart](#quickstart) • [CLI reference](#cli-reference) • [Comparison](#comparison) • [FAQ](#faq)
+
+**Classify a GPU workload as `TRAINING`, `INFERENCE`, or `IDLE` from telemetry alone. No code changes to the workload, no self-reported job labels.**
+
 ![WorkloadTruth classifying a synthetic training workload, then running the evasion-robustness benchmark](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo.gif)
 
 Every GPU scheduler in common use today, including [run:ai](https://docs.run.ai/v2.20/Researcher/workloads/inference/inference-overview/), Slurm, and Kubernetes GPU operators, asks you to *declare* whether a job is training or inference at submission time. None of them check. WorkloadTruth reads GPU telemetry (utilization, memory pattern, power draw) and answers the question independently, so a mislabeled or misbehaving job doesn't go unnoticed.
-
-## Table of contents
-
-- [Quick summary](#quick-summary)
-- [Install](#install)
-- [Quickstart](#quickstart)
-- [How classification works](#how-classification-works)
-- [Benchmark](#benchmark)
-- [CLI reference](#cli-reference)
-- [Agent-native (MCP + A2A)](#agent-native-mcp--a2a)
-- [Audit log](#audit-log)
-- [Why two registries](#why-two-registries)
-- [Comparison](#comparison)
-- [What is WorkloadTruth, and why does it exist](#what-is-workloadtruth-and-why-does-it-exist)
-- [Relationship to prior research](#relationship-to-prior-research)
-- [What WorkloadTruth is not](#what-workloadtruth-is-not)
-- [FAQ](#faq)
-
-## Quick summary
-
-- **Install:** `pip install "workloadtruth-cli[nvml]"` for real GPU access, or `pip install workloadtruth-cli` to try it with the synthetic backend, no GPU needed
-- **Use it for:** catching cost-misallocated GPU jobs (a job billed as low-priority "inference" that's actually running full training) and unauthorized workload changes (an inference endpoint that starts training on live traffic without sign-off)
-- **What it's not:** a compliance or regulatory-audit tool. No regulation currently requires this kind of monitoring, see [What WorkloadTruth is not](#what-workloadtruth-is-not) below
-- **Prior art:** builds on and cites [arXiv:2606.19262](https://arxiv.org/abs/2606.19262) (ICML 2026), see [Relationship to prior research](#relationship-to-prior-research)
 
 ## Install
 
@@ -48,6 +26,9 @@ pip install workloadtruth-cli
 # npm launcher (thin wrapper around the PyPI package, see "Why two registries")
 npx workloadtruth-cli --help
 ```
+
+> [!NOTE]
+> The npm package is a launcher, not a standalone install. `npx workloadtruth-cli` execs the real `workloadtruth` binary from PATH, so the PyPI package (`pip install workloadtruth-cli`) must already be installed first.
 
 ## Quickstart
 
@@ -69,6 +50,12 @@ $ workloadtruth classify --backend nvml --samples 10 --interval 1 --json
 ```
 
 `--json` on every command switches to machine-readable output for scripts and agents.
+
+## Quick summary
+
+- **Use it for:** catching cost-misallocated GPU jobs (a job billed as low-priority "inference" that's actually running full training) and unauthorized workload changes (an inference endpoint that starts training on live traffic without sign-off)
+- **What it's not:** a compliance or regulatory-audit tool. No regulation currently requires this kind of monitoring, see [What WorkloadTruth is not](#what-workloadtruth-is-not) below
+- **Prior art:** builds on and cites [arXiv:2606.19262](https://arxiv.org/abs/2606.19262) (ICML 2026), see [Relationship to prior research](#relationship-to-prior-research)
 
 ## How classification works
 
@@ -141,7 +128,8 @@ pip install "workloadtruth-cli[mcp]"
 workloadtruth mcp
 ```
 
-The `mcp` package itself requires Python 3.10+, stricter than WorkloadTruth's own 3.9 floor. Every other feature (`classify`, `watch`, `benchmark`, `verify-log`) works on Python 3.9.
+> [!NOTE]
+> The `mcp` extra requires Python 3.10+, stricter than WorkloadTruth's own 3.9 floor. `pip install "workloadtruth-cli[mcp]"` will fail to resolve on Python 3.9. Every other feature (`classify`, `watch`, `benchmark`, `verify-log`) works on Python 3.9.
 
 Exposes three tools over stdio MCP: `classify_workload`, `run_benchmark`, `verify_audit_log`. A `.well-known/agent.json` manifest is shipped at the repo root for A2A-style discovery, listing both the CLI and MCP interfaces and the packages that provide them.
 
