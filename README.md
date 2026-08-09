@@ -103,6 +103,8 @@ workloadtruth benchmark --trials 300 --window 30 --json
 
 ## CLI reference
 
+![WorkloadTruth --help output listing the classify, watch, benchmark, verify-log, and mcp subcommands](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo-help.gif)
+
 ```
 $ workloadtruth --help
 Usage: workloadtruth [OPTIONS] COMMAND [ARGS]...
@@ -146,6 +148,8 @@ Exposes three tools over stdio MCP: `classify_workload`, `run_benchmark`, `verif
 ## Audit log
 
 `workloadtruth watch` appends a hash-chained entry to `workloadtruth.log.jsonl` on every classification window. Each entry's hash covers its own content plus the previous entry's hash, so any edit, reorder, or deletion after the fact breaks the chain from that point forward. `workloadtruth verify-log` re-derives every hash and reports the first broken link, if any.
+
+![WorkloadTruth watch appending hash-chained entries to a local audit log, then verify-log confirming the chain hasn't been tampered with](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo-verifylog.gif)
 
 This proves what was classified, when, and that the local record hasn't been silently altered afterward. **It does not prove the classification itself was correct**, and it is not evidence of regulatory compliance. See below.
 
