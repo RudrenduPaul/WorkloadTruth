@@ -8,7 +8,7 @@ version = "0.1.2"
 description = "Classify a GPU workload as inference or training from telemetry alone, no application changes required."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [{ name = "Rudrendu Paul" }, { name = "Sourav Nandy" }]
 keywords = [
     "gpu",
@@ -79,9 +79,6 @@ target-version = "py39"
 select = ["E", "F", "I", "UP", "B"]
 
 [tool.mypy]
-# Type-checked against 3.10 (mypy's own floor); the package itself still
-# supports 3.9 at runtime (see requires-python above) since nothing here
-# uses a 3.10-only runtime feature, only 3.10-only type-checking behavior.
 python_version = "3.10"
 strict = true
 ignore_missing_imports = true
