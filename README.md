@@ -1,5 +1,8 @@
 # WorkloadTruth
 
+<!-- mcp-name: io.github.RudrenduPaul/workloadtruth -->
+<!-- Ownership-proof string for registry.modelcontextprotocol.io publishing. Do not remove. -->
+
 [![CI](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml/badge.svg)](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/workloadtruth-cli)](https://pypi.org/project/workloadtruth-cli/)
 [![npm](https://img.shields.io/npm/v/workloadtruth-cli)](https://www.npmjs.com/package/workloadtruth-cli)
@@ -121,17 +124,46 @@ Commands:
 
 Every command supports `--json`. Full flag reference: `workloadtruth <command> --help`.
 
-## Agent-native (MCP + A2A)
+## MCP Server
+
+WorkloadTruth ships a [Model Context Protocol](https://modelcontextprotocol.io) server so an AI agent (Claude, Cursor, or any MCP-compatible client) can classify GPU workloads, run the evasion-robustness benchmark, and verify the audit log directly, without a human invoking the CLI by hand.
+
+Install the extra:
 
 ```bash
 pip install "workloadtruth-cli[mcp]"
-workloadtruth mcp
 ```
 
 > [!NOTE]
 > The `mcp` extra requires Python 3.10+, stricter than WorkloadTruth's own 3.9 floor. `pip install "workloadtruth-cli[mcp]"` will fail to resolve on Python 3.9. Every other feature (`classify`, `watch`, `benchmark`, `verify-log`) works on Python 3.9.
 
-Exposes three tools over stdio MCP: `classify_workload`, `run_benchmark`, `verify_audit_log`. A `.well-known/agent.json` manifest is shipped at the repo root for A2A-style discovery, listing both the CLI and MCP interfaces and the packages that provide them.
+Add it to your MCP client's config (for Claude Desktop, `claude_desktop_config.json`). The server is started via the `workloadtruth mcp` subcommand, not a separate console script:
+
+```json
+{
+  "mcpServers": {
+    "workloadtruth": {
+      "command": "uvx",
+      "args": ["--from", "workloadtruth-cli", "workloadtruth", "mcp"]
+    }
+  }
+}
+```
+
+The server exposes three tools over stdio:
+
+- **`classify_workload(backend="nvml", profile="training", gpu_index=0, samples=10, interval_seconds=1.0, write_to_audit_log=False)`**: samples GPU telemetry and classifies it as `TRAINING`, `INFERENCE`, or `IDLE`. `backend` is `"nvml"` (real hardware) or `"synthetic"` (documented synthetic traces, no GPU required). Optionally appends the result to the hash-chained audit log.
+- **`run_benchmark(trials=50, window=30)`**: runs the evasion-robustness benchmark against synthetic telemetry and returns per-profile accuracy under clean and evasion-obfuscated conditions.
+- **`verify_audit_log(log_file="workloadtruth.log.jsonl")`**: re-derives the hash chain of a local audit log and reports whether it has been tampered with.
+
+Example call, classifying a synthetic training trace with no GPU required:
+
+```
+classify_workload(backend="synthetic", profile="training", samples=10, interval_seconds=0)
+-> {"workload_type": "TRAINING", "confidence": 1.0, "gpu_index": 0, ...}
+```
+
+Transport is stdio, so there is nothing to host: the MCP client spawns `workloadtruth mcp` as a local subprocess. A `.well-known/agent.json` manifest is also shipped at the repo root for A2A-style discovery, listing both the CLI and MCP interfaces and the packages that provide them. Source: [`src/workloadtruth/mcp_server.py`](src/workloadtruth/mcp_server.py).
 
 ## Audit log
 
