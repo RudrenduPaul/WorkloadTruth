@@ -32,7 +32,10 @@ def build_app(default_backend: str = "nvml") -> FastMCP:
         interval_seconds: float = 1.0,
         write_to_audit_log: bool = False,
     ) -> dict[str, Any]:
-        """Classify what a GPU is *actually* doing right now (TRAINING, INFERENCE, or IDLE) from raw telemetry alone -- utilization, memory-growth slope, and power draw -- with no reliance on a job's self-reported label and no inspection of its code, weights, or data.
+        """Classify what a GPU is *actually* doing right now (TRAINING, INFERENCE, or IDLE)
+        from raw telemetry alone -- utilization, memory-growth slope, and power draw -- with
+        no reliance on a job's self-reported label and no inspection of its code, weights, or
+        data.
 
         Call this to catch cost misallocation (a job billed as low-priority
         "inference" that is really running full training) or an unauthorized
@@ -102,7 +105,9 @@ def build_app(default_backend: str = "nvml") -> FastMCP:
 
     @app.tool()
     def run_benchmark(trials: int = 50, window: int = 30) -> dict[str, Any]:
-        """Measure the shipped rule-based classifier's accuracy against documented synthetic GPU telemetry, both clean and under a deliberate evasion transform that mimics an operator disguising a training job as inference.
+        """Measure the shipped rule-based classifier's accuracy against documented synthetic
+        GPU telemetry, both clean and under a deliberate evasion transform that mimics an
+        operator disguising a training job as inference.
 
         Call this to report or sanity-check classifier robustness (e.g.
         before citing accuracy numbers, or after changing a threshold in
@@ -134,7 +139,8 @@ def build_app(default_backend: str = "nvml") -> FastMCP:
 
     @app.tool()
     def verify_audit_log(log_file: str = str(DEFAULT_LOG_PATH)) -> dict[str, Any]:
-        """Verify that a local WorkloadTruth audit log's hash chain is intact, i.e. no entry was edited, reordered, or deleted after it was written.
+        """Verify that a local WorkloadTruth audit log's hash chain is intact, i.e. no entry
+        was edited, reordered, or deleted after it was written.
 
         Call this before trusting historical `classify_workload` /
         `workloadtruth watch` records for anything security- or

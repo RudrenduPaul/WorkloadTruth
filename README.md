@@ -11,6 +11,8 @@
 
 [Install](#install) • [Quickstart](#quickstart) • [CLI reference](#cli-reference) • [Comparison](#comparison) • [FAQ](#faq)
 
+<a href="https://www.producthunt.com/products/workloadtruth?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-workloadtruth" target="_blank" rel="noopener noreferrer"><img alt="WorkloadTruth - Verify if a GPU job is training or idling | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1222907&theme=light&t=1786881659089"></a>
+
 **Classify a GPU workload as `TRAINING`, `INFERENCE`, or `IDLE` from telemetry alone. No code changes to the workload, no self-reported job labels.**
 
 ![WorkloadTruth classifying a synthetic training workload, then running the evasion-robustness benchmark](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo.gif)
