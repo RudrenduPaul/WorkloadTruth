@@ -17,7 +17,7 @@
 
 ![WorkloadTruth classifying a synthetic training workload, then running the evasion-robustness benchmark](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo.gif)
 
-Every GPU scheduler in common use today, including [run:ai](https://docs.run.ai/v2.20/Researcher/workloads/inference/inference-overview/), Slurm, and Kubernetes GPU operators, asks you to *declare* whether a job is training or inference at submission time. None of them check. WorkloadTruth reads GPU telemetry (utilization, memory pattern, power draw) and answers the question independently, so a mislabeled or misbehaving job doesn't go unnoticed.
+Every GPU scheduler in common use today, including [run:ai](https://run-ai-docs.nvidia.com/saas/workloads-in-nvidia-run-ai/using-inference/nvidia-run-ai-inference-overview), Slurm, and Kubernetes GPU operators, asks you to *declare* whether a job is training or inference at submission time. None of them check. WorkloadTruth reads GPU telemetry (utilization, memory pattern, power draw) and answers the question independently, so a mislabeled or misbehaving job doesn't go unnoticed.
 
 ## Install
 
@@ -118,11 +118,11 @@ Commands:
 
 | Command | Purpose |
 |---|---|
-| `classify` | One-shot classification. `--backend synthetic\|nvml`, `--json` for machine-readable output. |
-| `watch` | Continuous classification; appends a hash-chained entry to a local audit log on every window. |
-| `benchmark` | Runs the evasion-robustness benchmark (see above). |
-| `verify-log` | Re-derives every audit-log entry's hash and confirms the chain hasn't been tampered with. |
-| `mcp` | Starts an MCP server (stdio) exposing `classify_workload`, `run_benchmark`, `verify_audit_log` as agent-callable tools. Requires `pip install "workloadtruth-cli[mcp]"` on Python 3.10+ (see below). |
+| `classify` | One-shot classification. `--backend synthetic\|nvml`, `--profile` (synthetic only), `--gpu-index`, `--samples`, `--interval`, `--experimental` (not yet available), `--json`. |
+| `watch` | Continuous classification; appends a hash-chained entry to a local audit log on every window. `--window` (samples per window), `--iterations` (0 = run forever), `--log-file`, `--json`. |
+| `benchmark` | Runs the evasion-robustness benchmark (see above). `--trials`, `--window`, `--json`. |
+| `verify-log` | Re-derives every audit-log entry's hash and confirms the chain hasn't been tampered with. `--log-file`, `--json`. |
+| `mcp` | Starts an MCP server (stdio) exposing `classify_workload`, `run_benchmark`, `verify_audit_log` as agent-callable tools. `--backend`. Requires `pip install "workloadtruth-cli[mcp]"` on Python 3.10+ (see below). |
 
 Every command supports `--json`. Full flag reference: `workloadtruth <command> --help`.
 
@@ -177,7 +177,7 @@ This proves what was classified, when, and that the local record hasn't been sil
 
 ## Why two registries
 
-WorkloadTruth's implementation is Python. NVML access (`pynvml`/`nvidia-ml-py`) is the mature, official way to read NVIDIA GPU telemetry, and it's also what the closest prior art ([arXiv:2606.19262](https://arxiv.org/abs/2606.19262)) uses. The npm package (`workloadtruth-cli`) is a thin launcher, not a reimplementation. It locates and execs the real `workloadtruth` binary installed from PyPI, so `npx workloadtruth-cli` works for npm-first agent tooling without duplicating the classifier in two languages.
+WorkloadTruth's implementation is Python. NVML access (`pynvml`/`nvidia-ml-py`) is the mature, official way to read NVIDIA GPU telemetry, and it's also what the closest prior art ([arXiv:2606.19262](https://arxiv.org/abs/2606.19262)) uses. The npm package (`workloadtruth-cli`) is a thin launcher, not a reimplementation. It locates and execs the real `workloadtruth` binary installed from PyPI, so `npx workloadtruth-cli` works for npm-first agent tooling without duplicating the classifier in two languages. The npm package versions independently of the PyPI package since it only ships a launcher script, not the classifier itself.
 
 ## Comparison
 
@@ -189,7 +189,7 @@ WorkloadTruth's implementation is Python. NVML access (`pynvml`/`nvidia-ml-py`) 
 | Evasion-robustness benchmark | Yes (documented, reproducible) | N/A | N/A | N/A |
 | Requires an NVIDIA GPU | Only for the `nvml` backend; the `synthetic` backend works without one | Yes | Yes | No (general system metrics) |
 
-Checked directly against each project's own documentation: [DCGM exporter docs](https://docs.nvidia.com/datacenter/dcgm/latest/gpu-telemetry/dcgm-exporter.html), [run:ai inference overview](https://docs.run.ai/v2.20/Researcher/workloads/inference/inference-overview/), [W&B system metrics docs](https://docs.wandb.ai/models/ref/python/experiments/system-metrics). None of these classify workload type from telemetry alone. That gap is what WorkloadTruth fills.
+Checked directly against each project's own documentation: [DCGM exporter docs](https://docs.nvidia.com/datacenter/cloud-native/gpu-telemetry/latest/dcgm-exporter.html), [run:ai inference overview](https://run-ai-docs.nvidia.com/saas/workloads-in-nvidia-run-ai/using-inference/nvidia-run-ai-inference-overview), [W&B system metrics docs](https://docs.wandb.ai/models/ref/python/experiments/system-metrics). None of these classify workload type from telemetry alone. That gap is what WorkloadTruth fills.
 
 ## What is WorkloadTruth, and why does it exist
 
