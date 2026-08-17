@@ -1,6 +1,7 @@
 # WorkloadTruth
 
-**Classify a GPU workload as `TRAINING`, `INFERENCE`, or `IDLE` from telemetry alone. No code changes to the workload, no self-reported job labels.**
+<!-- mcp-name: io.github.RudrenduPaul/workloadtruth -->
+<!-- Ownership-proof string for registry.modelcontextprotocol.io publishing. Do not remove. -->
 
 [![CI](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml/badge.svg)](https://github.com/RudrenduPaul/WorkloadTruth/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/workloadtruth-cli)](https://pypi.org/project/workloadtruth-cli/)
@@ -8,33 +9,15 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](pyproject.toml)
 
+[Install](#install) • [Quickstart](#quickstart) • [CLI reference](#cli-reference) • [Comparison](#comparison) • [FAQ](#faq)
+
+<a href="https://www.producthunt.com/products/workloadtruth?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-workloadtruth" target="_blank" rel="noopener noreferrer"><img alt="WorkloadTruth - Verify if a GPU job is training or idling | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1222907&theme=light&t=1786881659089"></a>
+
+**Classify a GPU workload as `TRAINING`, `INFERENCE`, or `IDLE` from telemetry alone. No code changes to the workload, no self-reported job labels.**
+
 ![WorkloadTruth classifying a synthetic training workload, then running the evasion-robustness benchmark](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo.gif)
 
 Every GPU scheduler in common use today, including [run:ai](https://run-ai-docs.nvidia.com/saas/workloads-in-nvidia-run-ai/using-inference/nvidia-run-ai-inference-overview), Slurm, and Kubernetes GPU operators, asks you to *declare* whether a job is training or inference at submission time. None of them check. WorkloadTruth reads GPU telemetry (utilization, memory pattern, power draw) and answers the question independently, so a mislabeled or misbehaving job doesn't go unnoticed.
-
-## Table of contents
-
-- [Quick summary](#quick-summary)
-- [Install](#install)
-- [Quickstart](#quickstart)
-- [How classification works](#how-classification-works)
-- [Benchmark](#benchmark)
-- [CLI reference](#cli-reference)
-- [Agent-native (MCP + A2A)](#agent-native-mcp--a2a)
-- [Audit log](#audit-log)
-- [Why two registries](#why-two-registries)
-- [Comparison](#comparison)
-- [What is WorkloadTruth, and why does it exist](#what-is-workloadtruth-and-why-does-it-exist)
-- [Relationship to prior research](#relationship-to-prior-research)
-- [What WorkloadTruth is not](#what-workloadtruth-is-not)
-- [FAQ](#faq)
-
-## Quick summary
-
-- **Install:** `pip install "workloadtruth-cli[nvml]"` for real GPU access, or `pip install workloadtruth-cli` to try it with the synthetic backend, no GPU needed
-- **Use it for:** catching cost-misallocated GPU jobs (a job billed as low-priority "inference" that's actually running full training) and unauthorized workload changes (an inference endpoint that starts training on live traffic without sign-off)
-- **What it's not:** a compliance or regulatory-audit tool. No regulation currently requires this kind of monitoring, see [What WorkloadTruth is not](#what-workloadtruth-is-not) below
-- **Prior art:** builds on and cites [arXiv:2606.19262](https://arxiv.org/abs/2606.19262) (ICML 2026), see [Relationship to prior research](#relationship-to-prior-research)
 
 ## Install
 
@@ -48,6 +31,9 @@ pip install workloadtruth-cli
 # npm launcher (thin wrapper around the PyPI package, see "Why two registries")
 npx workloadtruth-cli --help
 ```
+
+> [!NOTE]
+> The npm package is a launcher, not a standalone install. `npx workloadtruth-cli` execs the real `workloadtruth` binary from PATH, so the PyPI package (`pip install workloadtruth-cli`) must already be installed first.
 
 ## Quickstart
 
@@ -70,9 +56,15 @@ $ workloadtruth classify --backend nvml --samples 10 --interval 1 --json
 
 `--json` on every command switches to machine-readable output for scripts and agents.
 
+## Quick summary
+
+- **Use it for:** catching cost-misallocated GPU jobs (a job billed as low-priority "inference" that's actually running full training) and unauthorized workload changes (an inference endpoint that starts training on live traffic without sign-off)
+- **What it's not:** a compliance or regulatory-audit tool. No regulation currently requires this kind of monitoring, see [What WorkloadTruth is not](#what-workloadtruth-is-not) below
+- **Prior art:** builds on and cites [arXiv:2606.19262](https://arxiv.org/abs/2606.19262) (ICML 2026), see [Relationship to prior research](#relationship-to-prior-research)
+
 ## How classification works
 
-WorkloadTruth ships a **rule-based classifier only** in v0.1: a set of documented, inspectable thresholds over four features extracted from a telemetry window (average and variance of GPU utilization, memory-growth slope, average and variance of power draw). Every threshold lives as a named constant in [`src/workloadtruth/classifier/rules.py`](src/workloadtruth/classifier/rules.py) with a comment explaining its intuition. Nothing is a black box.
+WorkloadTruth currently ships a **rule-based classifier only**: a set of documented, inspectable thresholds over four features extracted from a telemetry window (average and variance of GPU utilization, memory-growth slope, average and variance of power draw). Every threshold lives as a named constant in [`src/workloadtruth/classifier/rules.py`](src/workloadtruth/classifier/rules.py) with a comment explaining its intuition. Nothing is a black box.
 
 `--experimental` (an ML-based classifier) is present as a flag but fails loudly with an explanation rather than shipping a fake result. [arXiv:2606.19262](https://arxiv.org/abs/2606.19262)'s trained model and dataset were never published, and this project has no NVIDIA GPU in its build environment to collect real training data. An ML classifier ships here only once it's trained on a real, disclosed dataset and independently shown to beat the rule-based baseline, not before.
 
@@ -82,7 +74,7 @@ WorkloadTruth ships a **rule-based classifier only** in v0.1: a set of documente
 
 **This is run on synthetic data, not live NVIDIA hardware, so it is not directly comparable to arXiv:2606.19262's real-hardware numbers.** Both are reported below, side by side, never blended into one figure.
 
-| | arXiv:2606.19262 (real hardware, NVML) | WorkloadTruth v0.1 (synthetic traces, 300 trials/cell) |
+| | arXiv:2606.19262 (real hardware, NVML) | WorkloadTruth (synthetic traces, 300 trials/cell) |
 |---|---|---|
 | Clean accuracy | 98.2% | 100.0% |
 | Evasion accuracy | 43-87% | 66.7% overall |
@@ -102,6 +94,8 @@ workloadtruth benchmark --trials 300 --window 30 --json
 ```
 
 ## CLI reference
+
+![WorkloadTruth --help output listing the classify, watch, benchmark, verify-log, and mcp subcommands](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo-help.gif)
 
 ```
 $ workloadtruth --help
@@ -132,20 +126,52 @@ Commands:
 
 Every command supports `--json`. Full flag reference: `workloadtruth <command> --help`.
 
-## Agent-native (MCP + A2A)
+## MCP Server
+
+WorkloadTruth ships a [Model Context Protocol](https://modelcontextprotocol.io) server so an AI agent (Claude, Cursor, or any MCP-compatible client) can classify GPU workloads, run the evasion-robustness benchmark, and verify the audit log directly, without a human invoking the CLI by hand.
+
+Install the extra:
 
 ```bash
 pip install "workloadtruth-cli[mcp]"
-workloadtruth mcp
 ```
 
-The `mcp` package itself requires Python 3.10+, stricter than WorkloadTruth's own 3.9 floor. Every other feature (`classify`, `watch`, `benchmark`, `verify-log`) works on Python 3.9.
+> [!NOTE]
+> The `mcp` extra requires Python 3.10+, stricter than WorkloadTruth's own 3.9 floor. `pip install "workloadtruth-cli[mcp]"` will fail to resolve on Python 3.9. Every other feature (`classify`, `watch`, `benchmark`, `verify-log`) works on Python 3.9.
 
-Exposes three tools over stdio MCP: `classify_workload`, `run_benchmark`, `verify_audit_log`. A `.well-known/agent.json` manifest is shipped at the repo root for A2A-style discovery, listing both the CLI and MCP interfaces and the packages that provide them.
+Add it to your MCP client's config (for Claude Desktop, `claude_desktop_config.json`). The server is started via the `workloadtruth mcp` subcommand, not a separate console script:
+
+```json
+{
+  "mcpServers": {
+    "workloadtruth": {
+      "command": "uvx",
+      "args": ["--from", "workloadtruth-cli", "workloadtruth", "mcp"]
+    }
+  }
+}
+```
+
+The server exposes three tools over stdio:
+
+- **`classify_workload(backend="nvml", profile="training", gpu_index=0, samples=10, interval_seconds=1.0, write_to_audit_log=False)`**: samples GPU telemetry and classifies it as `TRAINING`, `INFERENCE`, or `IDLE`. `backend` is `"nvml"` (real hardware) or `"synthetic"` (documented synthetic traces, no GPU required). Optionally appends the result to the hash-chained audit log.
+- **`run_benchmark(trials=50, window=30)`**: runs the evasion-robustness benchmark against synthetic telemetry and returns per-profile accuracy under clean and evasion-obfuscated conditions.
+- **`verify_audit_log(log_file="workloadtruth.log.jsonl")`**: re-derives the hash chain of a local audit log and reports whether it has been tampered with.
+
+Example call, classifying a synthetic training trace with no GPU required:
+
+```
+classify_workload(backend="synthetic", profile="training", samples=10, interval_seconds=0)
+-> {"workload_type": "TRAINING", "confidence": 1.0, "gpu_index": 0, ...}
+```
+
+Transport is stdio, so there is nothing to host: the MCP client spawns `workloadtruth mcp` as a local subprocess. A `.well-known/agent.json` manifest is also shipped at the repo root for A2A-style discovery, listing both the CLI and MCP interfaces and the packages that provide them. Source: [`src/workloadtruth/mcp_server.py`](src/workloadtruth/mcp_server.py).
 
 ## Audit log
 
 `workloadtruth watch` appends a hash-chained entry to `workloadtruth.log.jsonl` on every classification window. Each entry's hash covers its own content plus the previous entry's hash, so any edit, reorder, or deletion after the fact breaks the chain from that point forward. `workloadtruth verify-log` re-derives every hash and reports the first broken link, if any.
+
+![WorkloadTruth watch appending hash-chained entries to a local audit log, then verify-log confirming the chain hasn't been tampered with](https://raw.githubusercontent.com/RudrenduPaul/WorkloadTruth/main/docs/demo-verifylog.gif)
 
 This proves what was classified, when, and that the local record hasn't been silently altered afterward. **It does not prove the classification itself was correct**, and it is not evidence of regulatory compliance. See below.
 
@@ -194,7 +220,7 @@ WorkloadTruth's core technique, classifying training vs. non-training GPU activi
 Only for the `nvml` backend. `--backend synthetic` runs the full classifier and CLI against documented synthetic traces, no GPU required. Useful for trying the tool or for CI.
 
 **Can it classify AMD or Intel GPU workloads?**
-Not in v0.1. The telemetry layer is a pluggable interface (`TelemetryBackend`) specifically so a new vendor backend (AMD ROCm, Intel Level Zero) can be added without touching the classifier. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Not yet. The telemetry layer is a pluggable interface (`TelemetryBackend`) specifically so a new vendor backend (AMD ROCm, Intel Level Zero) can be added without touching the classifier. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 **Is the classifier accurate enough to bill or penalize someone based on its output?**
 Not yet, and the benchmark section above is the honest reason why: 0% accuracy on evasive training workloads today. Treat `workload_type` as a signal to investigate, not a verdict.
