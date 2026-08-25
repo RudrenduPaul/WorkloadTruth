@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.5 -- 2026-08-11 (PyPI/GitHub), 2026-08-16 (npm)
+
+PyPI/GitHub reached 0.1.5 first (2026-08-11): adds `server.json` for the Official MCP
+Registry and improves MCP tool description quality. npm-shim caught up five days later
+(2026-08-16): syncs its README to the root README's benchmark data, prior-research
+framing, and honest scope disclosures, and adds the Product Hunt launch badge. No
+functional CLI changes.
+
+## 0.1.4 -- 2026-08-10 (PyPI/GitHub), 2026-07-21 (npm)
+
+npm-shim reached 0.1.4 first (2026-07-21): adds Sourav Nandy as an npm contributor,
+matching PyPI's existing `authors` listing, and republishes the shim to pick up the
+fix. PyPI/GitHub caught up about three weeks later (2026-08-10): caps the `mcp`
+optional dependency below 2.0.0 to avoid a breaking upstream API change, fixes
+`requires-python` to match the `mcp` dependency's own floor, credits Sourav Nandy in
+LICENSE, adds a CodeQL security-scanning workflow, adds the missing npm badge and
+removes stale v0.1 version references from the README, refreshes the README's demo
+GIFs, restructures the README for searchability, and documents the MCP server. No
+functional CLI changes.
+
 ## 0.1.3 -- 2026-07-20 (npm only)
 
 npm's published package had a thin, scoped-down README instead of the
