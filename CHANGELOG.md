@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 -- 2026-09-24
+
+- Dependencies upgraded to the latest releases. The `mcp` optional extra now requires
+  `mcp>=2.0.0` (previously capped below 2.0.0) and the MCP server is migrated to the
+  mcp 2 API.
+- Support floor changed: Python 3.9 is dropped, Python 3.10 or newer is now required.
+- The npm launcher and the PyPI package both move to 0.2.0, and the `server.json`
+  (previously 0.1.4) and `.well-known/agent.json` versions are synced to it.
+- npm publishing moves to npm Trusted Publishing (OIDC), so no long-lived npm token is
+  used. PyPI already publishes through Trusted Publishing.
+
 ## 0.1.5 -- 2026-08-11 (PyPI/GitHub), 2026-08-16 (npm)
 
 PyPI/GitHub reached 0.1.5 first (2026-08-11): adds `server.json` for the Official MCP
