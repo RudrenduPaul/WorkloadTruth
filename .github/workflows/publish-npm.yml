@@ -3,7 +3,6 @@ name: Publish to npm
 on:
   release:
     types: [published]
-  workflow_dispatch: {}
 
 jobs:
   publish:
@@ -20,7 +19,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Upgrade npm for Trusted Publishing (OIDC)
-        run: npm install -g npm@latest
+        run: npm install -g npm@11
 
       - name: Sanity-check the npm launcher's not-found message
         working-directory: npm-shim
