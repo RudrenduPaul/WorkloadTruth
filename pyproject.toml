@@ -8,7 +8,7 @@ version = "0.1.5"
 description = "Classify a GPU workload as inference or training from telemetry alone, no application changes required."
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [{ name = "Rudrendu Paul" }, { name = "Sourav Nandy" }]
 keywords = [
     "gpu",
@@ -29,7 +29,6 @@ classifiers = [
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -40,10 +39,6 @@ dependencies = ["click>=8.1"]
 
 [project.optional-dependencies]
 nvml = ["nvidia-ml-py>=12.560"]
-# The mcp package itself requires Python >=3.10, stricter than this
-# project's own >=3.9 floor -- `pip install "workloadtruth-cli[mcp]"`
-# on Python 3.9 will fail to resolve. Every other feature (classify,
-# watch, benchmark, verify-log) works on 3.9.
 # Capped below 2.0.0: that release renamed/relocated
 # mcp.server.fastmcp.FastMCP (now mcp.server.mcpserver.MCPServer),
 # which breaks the import in mcp_server.py. Revisit once this module
@@ -73,7 +68,7 @@ packages = ["src/workloadtruth"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

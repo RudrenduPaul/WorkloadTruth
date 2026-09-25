@@ -7,7 +7,7 @@
 [![PyPI](https://img.shields.io/pypi/v/workloadtruth-cli)](https://pypi.org/project/workloadtruth-cli/)
 [![npm](https://img.shields.io/npm/v/workloadtruth-cli)](https://www.npmjs.com/package/workloadtruth-cli)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](pyproject.toml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
 
 [Install](#install) • [Quickstart](#quickstart) • [CLI reference](#cli-reference) • [Comparison](#comparison) • [FAQ](#faq)
 
@@ -136,9 +136,6 @@ Install the extra:
 pip install "workloadtruth-cli[mcp]"
 ```
 
-> [!NOTE]
-> The `mcp` extra requires Python 3.10+, stricter than WorkloadTruth's own 3.9 floor. `pip install "workloadtruth-cli[mcp]"` will fail to resolve on Python 3.9. Every other feature (`classify`, `watch`, `benchmark`, `verify-log`) works on Python 3.9.
-
 Add it to your MCP client's config (for Claude Desktop, `claude_desktop_config.json`). The server is started via the `workloadtruth mcp` subcommand, not a separate console script:
 
 ```json
@@ -232,7 +229,7 @@ Its trained weights and dataset were never published. Reimplementing an ML class
 run:ai and DCGM both expose or use GPU telemetry, but neither classifies workload type from that telemetry. run:ai relies entirely on the label the job's owner declares at submission; DCGM just exposes raw utilization and memory metrics for something else to interpret. WorkloadTruth is the layer that actually looks at the telemetry and answers the question. See the [comparison table](#comparison).
 
 **Does this work on Windows, macOS, and Linux?**
-The `synthetic` backend runs anywhere Python 3.9+ runs, including this project's own macOS build environment (which has no NVIDIA GPU). The `nvml` backend requires an NVIDIA GPU and driver, which in practice means Linux or Windows with NVIDIA hardware; NVML itself is not available on macOS.
+The `synthetic` backend runs anywhere Python 3.10+ runs, including this project's own macOS build environment (which has no NVIDIA GPU). The `nvml` backend requires an NVIDIA GPU and driver, which in practice means Linux or Windows with NVIDIA hardware; NVML itself is not available on macOS.
 
 **What license is this under, and can I use it commercially?**
 Apache 2.0. Commercial use, modification, and redistribution are all permitted under its terms; see [LICENSE](LICENSE).
