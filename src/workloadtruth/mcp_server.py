@@ -11,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from workloadtruth.audit_log import append_entry, build_entry, last_hash, verify_chain
 from workloadtruth.classifier.rules import classify
@@ -20,8 +20,8 @@ from workloadtruth.telemetry import get_backend
 DEFAULT_LOG_PATH = Path("workloadtruth.log.jsonl")
 
 
-def build_app(default_backend: str = "nvml") -> FastMCP:
-    app = FastMCP("workloadtruth")
+def build_app(default_backend: str = "nvml") -> MCPServer:
+    app = MCPServer("workloadtruth")
 
     @app.tool()
     def classify_workload(
